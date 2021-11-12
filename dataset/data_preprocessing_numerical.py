@@ -91,11 +91,12 @@ def shuffle_data(data_arr, test_ratio):
     return data_arr
 
 
-def split_train_test(df, split_ratio, random_state, split_type='random'):
+def split_train_test(df, split_ratio, n_splits=5, random_state=0, split_type='random'):
     last_column_name = df.columns[-1]
     df.rename(columns={last_column_name: 'class'})
 
     if split_type == 'random':
+        if
         train_set, test_set = train_test_split(df, test_size=(1-split_ratio), random_state=random_state)
 
     if split_type == 'stratified':
@@ -104,7 +105,10 @@ def split_train_test(df, split_ratio, random_state, split_type='random'):
             train_set = df.loc[train_index]
             test_set = df.loc[test_index]
 
-    if split_type == 'stratified':
+    if split_type == 'cross_validation':
+        kf = KFold(n_splits=n_splits, random_state=random_state)
+
+
 
     return train_set, test_set
 
