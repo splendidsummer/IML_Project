@@ -8,44 +8,55 @@ import math
 import random
 import time
 
+class fuzzyCMeans:
+
+    def __init__(self, k_clusters, max, epsilon):
+        self.k_clusters = k_clusters
+        self.max = max
+        self.epsilon = epsilon
+
+    def initialize_U(self):
+
+
+
 global MAX  # 用于初始化隶属度矩阵U
 MAX = 10000.0
 
 global Epsilon  # 结束条件
 Epsilon = 0.0000001
 
-
-def import_data_format_iris(file):
-    """
-    file这里是输入文件的路径，如iris.txt.
-    格式化数据，前四列为data，最后一列为类标号（有0，1，2三类）
-    如果是你自己的data，就不需要执行此段函数了。
-    """
-    data = []
-    cluster_location = []
-    with open(str(file), 'r') as f:
-        for line in f:
-            current = line.strip().split(",")  # 对每一行以逗号为分割，返回一个list
-            print(current)
-            current_dummy = []
-            for j in range(0, len(current) - 1):
-                # print(current[j])
-                current_dummy.append(float(current[j]))  # current_dummy存放data
-
-            # 下面注这段话提供了一个范例：若类标号不是0，1，2之类数字时该怎么给数据集
-            j += 1
-            if current[j] == "Iris-setosa\n":
-                cluster_location.append(0)
-            elif current[j] == "Iris-versicolor\n":
-                cluster_location.append(1)
-            else:
-                cluster_location.append(2)
-            data.append(current_dummy)
-    print("加载数据完毕")
-    return data
-
-
-#	return data , cluster_location
+#
+# def import_data_format_iris(file):
+#     """
+#     file这里是输入文件的路径，如iris.txt.
+#     格式化数据，前四列为data，最后一列为类标号（有0，1，2三类）
+#     如果是你自己的data，就不需要执行此段函数了。
+#     """
+#     data = []
+#     cluster_location = []
+#     with open(str(file), 'r') as f:
+#         for line in f:
+#             current = line.strip().split(",")  # 对每一行以逗号为分割，返回一个list
+#             print(current)
+#             current_dummy = []
+#             for j in range(0, len(current) - 1):
+#                 # print(current[j])
+#                 current_dummy.append(float(current[j]))  # current_dummy存放data
+#
+#             # 下面注这段话提供了一个范例：若类标号不是0，1，2之类数字时该怎么给数据集
+#             j += 1
+#             if current[j] == "Iris-setosa\n":
+#                 cluster_location.append(0)
+#             elif current[j] == "Iris-versicolor\n":
+#                 cluster_location.append(1)
+#             else:
+#                 cluster_location.append(2)
+#             data.append(current_dummy)
+#     print("加载数据完毕")
+#     return data
+#
+#
+# #	return data , cluster_location
 
 def randomize_data(data):
     """

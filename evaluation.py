@@ -13,7 +13,26 @@ which may include the following methods:
 
 """
 
+# SSW for elbow searching -- internal
+
 from sklearn import metrics
+from sklearn.metrics.cluster import adjusted_rand_score  # external evaluation
+from sklearn.metrics import f1_score, davies_bouldin_score
+
+def sum_in_cluster(centroid, samples):
+
+
+metrics.silhouette_score()
+
+
+
+
+
+
+
+
+
+
 
 
 
