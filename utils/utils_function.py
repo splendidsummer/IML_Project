@@ -29,9 +29,9 @@ def df_to_array(x):
 
 
     def labels_cost(X, centroids, dissim):
-    """Calculate labels and cost function given a matrix of points and
-    a list of centroids for the k-modes algorithm.
-    """
+        """Calculate labels and cost function given a matrix of points and
+        a list of centroids for the k-modes algorithm.
+        """
 
     n_points = X.shape[0]
     cost = 0.

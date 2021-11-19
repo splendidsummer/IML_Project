@@ -1,10 +1,6 @@
 from dataset.data_preprocessing_category import *
 import pickle
-
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-
-
-
 from sklearn.model_selection import train_test_split
 
 
@@ -52,6 +48,7 @@ if __name__ == '__main__':
         pickle.dump(splice_array, f)
 
     splice_df_unique.to_csv('splice_df.csv')
+
 
 
 

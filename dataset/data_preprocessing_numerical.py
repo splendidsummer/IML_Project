@@ -4,7 +4,9 @@ from scipy.io import arff
 from sklearn.preprocessing import scale, StandardScaler, MinMaxScaler, Normalizer
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit,\
     cross_val_score, KFold
-
+from sklearn.utils import shuffle
+import json
+import pickle
 
 
 def load_numerical_data(arff_paths_dict, dataset_name):
@@ -54,9 +56,9 @@ def fill_na(df, fill_value=False, inplace=True, method=''):
             raise ValueError('You must define the fillna method if the fill_value is not given')
         elif method == 'mean':
             df_col_mean = df.mean()
-            df = df.fillna(df_col_mean)
+            df = df.fillna(df_col_mean, inplace=inplace)
         elif method == 'ffill':
-            df = df.fillna(method=method, limit=2)
+            df = df.fillna(method=method, limit=2, inplace=True)
 
     return df
 
@@ -71,12 +73,12 @@ def normalize_data(df, normalize_method='MinMax'):
     """
 
     if normalize_method == 'MinMax':
-        normalizer = MinMaxScaler
+        normalizer = MinMaxScaler  # This scaling brings the value between 0 and 1
     elif normalize_method == 'Standard':
-        normalizer = scale  # Standardisation replaces the values by their Z scores
-    elif normalize_method == 'Mean':    # This distribution will have values between -1 and 1with μ=0
+        normalizer = scale  # Standardisation replaces the values by their Z scores, much more like Gaussian
+    elif normalize_method == 'Mean':    # This distribution will have values between 1 and -1 and 1with μ=0
         normalize_method == StandardScaler
-    elif normalize_method == 'UnitVector':
+    elif normalize_method == 'UnitVector':  # Scaling is done considering the whole feature vector to be of unit length
         normalizer = Normalizer
 
     normalize_df = df.apply(normalizer)  # Normalize data in each columns according to normalize_method
@@ -85,10 +87,9 @@ def normalize_data(df, normalize_method='MinMax'):
 
 
 # For illustration only. Sklearn has train_test_split()
-def shuffle_data(data_arr, test_ratio):
-    shuffled_indices = np.random.permutation(len(data_arr))
-    data_arr = data_arr[shuffled_indices]
-    return data_arr
+def shuffle_data(df):
+    df = shuffle_data(df)
+    return df
 
 
 def split_train_test(df, split_ratio, n_splits=5, random_state=0, split_type='random'):
@@ -96,7 +97,6 @@ def split_train_test(df, split_ratio, n_splits=5, random_state=0, split_type='ra
     df.rename(columns={last_column_name: 'class'})
 
     if split_type == 'random':
-        if
         train_set, test_set = train_test_split(df, test_size=(1-split_ratio), random_state=random_state)
 
     if split_type == 'stratified':
@@ -108,15 +108,40 @@ def split_train_test(df, split_ratio, n_splits=5, random_state=0, split_type='ra
     if split_type == 'cross_validation':
         kf = KFold(n_splits=n_splits, random_state=random_state)
 
-
-
     return train_set, test_set
-
-
-
 
 #
 #
 # def truncated_value(df, max_value, min_value):
 #     truncated_df = None
 #     return truncated_df
+
+
+if __name__ == '__main__':
+
+    dict_path = 'arff_paths_dict.json'
+    with open(dict_path, 'r') as f:
+        arff_path_dict = json.load(f)
+
+    dataset_names = ['pen-based', 'satimage']
+    for i, dataset_name in enumerate(dataset_names):
+            data, meta = load_numerical_data(arff_path_dict, dataset_names[i])
+            df = pd.DataFrame(data)
+            num_nulls = df.isnull().sum()
+            print('There are {} null values in {} dataset'.format(num_nulls, dataset_names[i]))
+            num1 = len(df)
+            df = drop_duplicates(df)
+            num2 = len(df)
+            print('{} duplicate samples get dropped in {} dataset'.format((num1 - num2), dataset_name))
+            df = drop_na(df, how='all')
+            num3 = len(df)
+            print('{} nan samples get dropped in {} dataset'.format((num2 - num3), dataset_name))
+            df = fill_na(df, method='mean')
+            df = normalize_data(df, normalize_method='MinMax')  # This scaling brings the value between 0 and 1
+
+            df = shuffle_data(df)
+            pickle_name = dataset_name + '.pkl'
+
+            with open(pickle_name, 'wb') as f:
+                pickle.dump(pickle_name, df)
+
