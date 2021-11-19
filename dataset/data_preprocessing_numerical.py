@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy.io import arff
-from sklearn.preprocessing import scale, StandardScaler, MinMaxScaler, Normalizer
+from sklearn.preprocessing import scale, StandardScaler, MinMaxScaler, Normalizer, LabelEncoder
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit,\
     cross_val_score, KFold
 from sklearn.utils import shuffle
@@ -89,7 +89,7 @@ def normalize_data(df, normalize_method='MinMax'):
 
 # For illustration only. Sklearn has train_test_split()
 def shuffle_data(df):
-    df = shuffle_data(df)
+    df = shuffle(df)
     return df
 
 
@@ -128,6 +128,14 @@ if __name__ == '__main__':
     for i, dataset_name in enumerate(dataset_names):
             data, meta = load_numerical_data(arff_path_dict, dataset_names[i])
             df = pd.DataFrame(data)
+            df_colunms = df.columns[:-1]
+            df_label_column = df.columns[-1]
+            data_labels = df[df_label_column]
+
+            le = LabelEncoder()
+            data_labels = le.fit(data_labels)
+
+            df = df[df_colunms]
             num_nulls = df.isnull().sum()
             print('There are {} null values in {} dataset'.format(num_nulls, dataset_names[i]))
             num1 = len(df)
@@ -141,8 +149,17 @@ if __name__ == '__main__':
             df = normalize_data(df, normalize_method='MinMax')  # This scaling brings the value between 0 and 1
 
             df = shuffle_data(df)
-            pickle_name = dataset_name + '.pkl'
+            data_name = dataset_name + '.pkl'
+            label_name = dataset_name + '_label.pkl'
 
-            with open(pickle_name, 'wb') as f:
-                pickle.dump(pickle_name, df)
+            with open(data_name, 'wb') as f:
+                pickle.dump(df, f)
+
+            with open(label_name, 'wb') as f:
+                pickle.dump(data_labels, f)
+
+
+
+
+
 
