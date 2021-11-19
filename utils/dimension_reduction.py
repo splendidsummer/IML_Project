@@ -90,11 +90,6 @@ class t_SNE:
 
 
 
-
-
-
-
-
         perplexity,  curr_probability = getPerplexity()
 
 
