@@ -50,13 +50,14 @@ def fill_na(df, fill_value=False, inplace=True, method=''):
     """
     if fill_value:
         value = float(input("You need to input a numerical specific value for NA"))
-        df = df.fillna(value, inplace=inplace)
+        df = df.fillna(value, inplace=True)
     else:
         if method is None:
             raise ValueError('You must define the fillna method if the fill_value is not given')
         elif method == 'mean':
-            df_col_mean = df.mean()
-            df = df.fillna(df_col_mean, inplace=inplace)
+            for col in list(df.columns):
+                mean_value = df[col].mean()
+                df[col].fillna(mean_value, inplace=inplace)
         elif method == 'ffill':
             df = df.fillna(method=method, limit=2, inplace=True)
 
