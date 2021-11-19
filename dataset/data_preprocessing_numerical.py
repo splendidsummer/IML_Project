@@ -74,15 +74,15 @@ def normalize_data(df, normalize_method='MinMax'):
     """
 
     if normalize_method == 'MinMax':
-        normalizer = MinMaxScaler  # This scaling brings the value between 0 and 1
+        normalizer = MinMaxScaler()  # This scaling brings the value between 0 and 1
     elif normalize_method == 'Standard':
         normalizer = scale  # Standardisation replaces the values by their Z scores, much more like Gaussian
     elif normalize_method == 'Mean':    # This distribution will have values between 1 and -1 and 1with μ=0
-        normalize_method == StandardScaler
+        normalize_method == StandardScaler()
     elif normalize_method == 'UnitVector':  # Scaling is done considering the whole feature vector to be of unit length
-        normalizer = Normalizer
+        normalizer = Normalizer()
 
-    normalize_df = df.apply(normalizer)  # Normalize data in each columns according to normalize_method
+    normalize_df = normalizer.fit_transform(df)  # Normalize data in each columns according to normalize_method
 
     return normalize_df
 
@@ -128,14 +128,15 @@ if __name__ == '__main__':
     for i, dataset_name in enumerate(dataset_names):
             data, meta = load_numerical_data(arff_path_dict, dataset_names[i])
             df = pd.DataFrame(data)
+            df = shuffle_data(df)
+
             df_colunms = df.columns[:-1]
             df_label_column = df.columns[-1]
+
             data_labels = df[df_label_column]
-
             le = LabelEncoder()
-            data_labels = le.fit(data_labels)
+            data_labels = le.fit_transform(data_labels)
 
-            df = df[df_colunms]
             num_nulls = df.isnull().sum()
             print('There are {} null values in {} dataset'.format(num_nulls, dataset_names[i]))
             num1 = len(df)
@@ -148,7 +149,6 @@ if __name__ == '__main__':
             df = fill_na(df, method='mean')
             df = normalize_data(df, normalize_method='MinMax')  # This scaling brings the value between 0 and 1
 
-            df = shuffle_data(df)
             data_name = dataset_name + '.pkl'
             label_name = dataset_name + '_label.pkl'
 
