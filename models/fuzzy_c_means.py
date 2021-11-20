@@ -7,7 +7,7 @@ import pandas as pd
 from fcmeans import FCM
 
 
-class fuzzycMeans:
+class fuzzyCMeans:
 
     def __init__(self, k_clusters, data_arr, max_U_value,
                  random_state, max_iter=10000, m=2, epsilon=1e-5):
@@ -79,3 +79,17 @@ class fuzzycMeans:
             # Stopping rule
             if np.linalg.norm(self.membership_matrix - old_membership_matrix) < self.epsilon:
                 break
+
+    def _compute_inference_distance(self, inputs):
+        distances = np.sqrt(np.einsum("ijk->ij", (inputs[:, None, :] - self.centroids) ** 2))
+        return distances
+
+    def inference(self, inputs):
+        inputs = np.expand_dims(inputs, axis=0) if len(inputs.shape) == 1 else inputs
+        dist = self._compute_inference_distance(inputs)
+        temp = dist ** float(2 / (self.m - 1))
+        denominator_ = temp.reshape((inputs.shape[0], 1, -1)).repeat(temp.shape[-1], axis=1)
+        denominator_ = temp[:, :, np.newaxis] / denominator_
+        fuzzy_results = 1 / denominator_.sum(2)
+        de_fuzzy_results = fuzzy_results.argmax(axis=-1)
+        return de_fuzzy_results
