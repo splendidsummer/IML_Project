@@ -1,4 +1,4 @@
-from models.k_means import *
+from models.fuzzy_c_means import *
 
 random_state = 2**3 + 1
 
@@ -14,8 +14,7 @@ test_data = np.vstack((test_data1, test_data2))
 inputs = np.vstack((inputs1, inputs2))
 inputs = np.vstack((inputs, inputs3))
 
-# cluster =
-# cluster = fuzzy_(3, inputs, 100, random_state)
+cluster = fuzzyCMeans(3, inputs, 100, random_state)
 #
 # cluster.init_centroids()
 # cluster.train()

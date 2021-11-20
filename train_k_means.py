@@ -26,7 +26,7 @@ if __name__ == '__main__':
     k_list = []
     # for k_clusters in range_list:
     for k_clusters in range_list:
-        print('the cur k_clusters is ', k_clusters)
+        print('the cur k value for clustering is ', k_clusters)
         random_state = random.randint(1, 100)
         cluster = Kmeans(k_clusters=k_clusters, data_arr=data_train, max_iter=100, random_state=random_state)
         cluster.init_centroids()

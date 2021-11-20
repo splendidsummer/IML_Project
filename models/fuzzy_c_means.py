@@ -9,13 +9,11 @@ from fcmeans import FCM
 
 class fuzzyCMeans:
 
-    def __init__(self, k_clusters, data_arr, max_U_value,
-                 random_state, max_iter=10000, m=2, epsilon=1e-5):
+    def __init__(self, k_clusters, data_arr, random_state, max_iter=10000, m=2, epsilon=1e-5):
 
         self.k_clusters = k_clusters
         self.data = data_arr
-        self.n_samples = data_arr.shape[-1]
-        self.max_u = max_U_value
+        self.n_samples = data_arr.shape[0]
         self.epsilon = epsilon
         self.gold_standard = data_arr[:, -1]
         self.membership_matrix = None
@@ -27,9 +25,9 @@ class fuzzyCMeans:
 
     def initialize_membership_matrix(self):
 
-        self.membership_matrix = self.random_generator.uniform(size=(self.n_samples, self.n_clusters))
+        self.membership_matrix = self.random_generator.uniform(size=(self.n_samples, self.k_clusters))
         membership_normalizer = self.membership_matrix.sum(axis=1)[np.newaxis].T
-        membership_normalizer = np.tile(membership_normalizer, self.n_clusters)
+        membership_normalizer = np.tile(membership_normalizer, self.k_clusters)
 
         self.membership_matrix = self.membership_matrix / membership_normalizer
 
@@ -57,7 +55,7 @@ class fuzzyCMeans:
         dist_samples_centroid = dist_samples_centroid ** float(2/(self.m-1))
         reshape_dist = dist_samples_centroid.reshape((self.data.shape[0], 1, -1))  # add a new dimension in the middle
         # expand the second dimension from 1 to
-        dist_on_all_centroids = reshape_dist.repeat(dist_samples_centroid.shape[-1], axis=1)
+        dist_on_all_centroids = reshape_dist.repeat(reshape_dist.shape[-1], axis=1)
         denominator = dist_samples_centroid[:, :, np.newaxis] / dist_on_all_centroids
 
         return 1 / denominator.sum(2)
@@ -70,10 +68,12 @@ class fuzzyCMeans:
                    the feature dimension.
                    return np.sqrt(np.einsum("ijk->ij", (A[:, None, :] - B) ** 2))
         """
-        distances = np.sqrt(np.einsum("ijk->ij", (self.data[:, None, :] - self.centroids) ** 2))
+
+        # firstly expand a new dimension in the middle by None
+        distances = np.sqrt(np.einsum("ijk->ij", (self.data[:, None, :] - self.centroids)**2))
         return distances
 
-    def train(self, random_state):
+    def train(self):
         self.initialize_membership_matrix()
 
         for _ in range(self.max_iter):
@@ -89,7 +89,7 @@ class fuzzyCMeans:
         distances = np.sqrt(np.einsum("ijk->ij", (inputs[:, None, :] - self.centroids) ** 2))
         return distances
 
-    def inference(self, inputs):
+    def get_inference(self, inputs):
         inputs = np.expand_dims(inputs, axis=0) if len(inputs.shape) == 1 else inputs
         dist = self._compute_inference_distance(inputs)
         temp = dist ** float(2 / (self.m - 1))

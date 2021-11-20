@@ -14,8 +14,8 @@ def load_data(name='', test_rate=0.25):
     data_root = 'dataset'
     if name == 'pen':
         print('------------------ the cur data set is pen ----------------')
-        data_path = os.path.join(data_root, 'pen_based.pkl')
-        label_path = os.path.join(data_root, 'pen_based_label.pkl')
+        data_path = os.path.join(data_root, 'pen-based.pkl')
+        label_path = os.path.join(data_root, 'pen-based_label.pkl')
     elif name == 'sat':
         print('------------------ the cur data set is sat ----------------')
         data_path = os.path.join(data_root, 'satimage.pkl')

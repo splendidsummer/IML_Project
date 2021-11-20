@@ -36,37 +36,46 @@ class PCA:
         return self.PCA_coordinats
 
 
-def load_data(name=''):
+def load_data(n_dimension, name=''):
     data_root = '../dataset'
+
     if name == 'pen':
         print('------------------ the cur data set is pen ----------------')
-        data_path = os.path.join(data_root, 'pen_based.pkl')
+        data_path = 'pen-based.pkl'
+        data_path = os.path.join(data_root, data_path)
+
     elif name == 'sat':
         print('------------------ the cur data set is sat ----------------')
-        data_path = os.path.join(data_root, 'satimage.pkl')
+        data_path = 'satimage.pkl'
+        data_path = os.path.join(data_root, data_path)
+
     data = pickle.load(open(data_path, 'rb'), encoding='utf-8')
     return data
 
 
-def save_data(data, name=''):
+def save_data(data, n_dimension, name=''):
     data_root = 'PCA_dataset'
     if name == 'pen':
         print('------------------ the cur data set is pen ----------------')
-        data_path = os.path.join(data_root, 'pen_pca.pkl')
+        n_components_path = 'pen_based_{}_components.pkl'.format(n_dimension)
+        data_path = os.path.join(data_root, n_components_path)
     elif name == 'sat':
         print('------------------ the cur data set is sat ----------------')
-        data_path = os.path.join(data_root, 'sat_pca.pkl')
+        n_components_path = 'satimage_{}_components.pkl'.format(n_dimension)
+        data_path = os.path.join(data_root, n_components_path)
     with open(data_path, 'wb') as f:
         pickle.dump(data, f)
 
 
 if __name__ == '__main__':
-    data_name = 'sat'
-    save_dim = 3
-    data = load_data(data_name)
-    pca = PCA(save_dim)
-    processed_data = pca.get_n_components(data)
-    save_data(processed_data, name=data_name)
+    data_name = ['pen', 'sat']
+    n_components = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    for name in data_name:
+        data = load_data(data_name, name=name)
+        for n_component in n_components:
+            pca = PCA(n_component)
+            processed_data = pca.get_n_components(data)
+            save_data(processed_data, n_component, name=name)
 
 
 
