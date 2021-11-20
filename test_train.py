@@ -14,11 +14,12 @@ test_data = np.vstack((test_data1, test_data2))
 inputs = np.vstack((inputs1, inputs2))
 inputs = np.vstack((inputs, inputs3))
 
-cluster = Kmeans(3, inputs, 100, random_state)
-
-cluster.init_centroids()
-cluster.train()
-inferences = cluster.get_inference(test_data)
+# cluster =
+# cluster = fuzzy_(3, inputs, 100, random_state)
+#
+# cluster.init_centroids()
+# cluster.train()
+# inferences = cluster.get_inference(test_data)
 
 
 
