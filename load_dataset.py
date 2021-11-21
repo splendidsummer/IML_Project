@@ -12,11 +12,11 @@ def load_data(name='', test_rate=0.25):
     :return:
     """
     data_root = 'dataset'
-    if name == 'pen':
+    if name == 'pen-based':
         print('------------------ the cur data set is pen ----------------')
         data_path = os.path.join(data_root, 'pen-based.pkl')
         label_path = os.path.join(data_root, 'pen-based_label.pkl')
-    elif name == 'sat':
+    elif name == 'satimage':
         print('------------------ the cur data set is sat ----------------')
         data_path = os.path.join(data_root, 'satimage.pkl')
         label_path = os.path.join(data_root, 'satimage_label.pkl')

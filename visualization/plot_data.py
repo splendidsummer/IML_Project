@@ -26,7 +26,7 @@ def plot_scatter_matrix(df, df_name):
     save_fig("scatter_matrix_plot")
 
 
-def save_fig(df_name, fig_path='visualization/scatter_plot/',
+def save_fig(df_name, fig_path='visualization/results',
              tight_layout=True, fig_extension="jpg", resolution=300):
 
     fig_path = fig_path + df_name + "." + "jpg"
@@ -43,3 +43,15 @@ def looking_for_correlation(df):
         print(corr_matrix[col].sort_values(ascending=False))
     return corr_matrix
 
+
+def plot_and_fig(X, y, dataset_name, data_root, metric):
+    title = metric + 'at different number of clusters (k_clusters)'
+    plt.plot(X, y, 'o-', color='b', label=metric)
+    plt.xlabel("k_clusters")
+    plt.ylabel(metric)
+    plt.legend(loc="best")
+    plt.title(title)
+    plt.show()
+    # data_root = ['./results/kmeans', './results/fuzzycmean']
+    image_path = data_root + dataset_name + '_' + metric + '.jpg'
+    plt.savefig(image_path)
