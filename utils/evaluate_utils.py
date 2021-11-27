@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.metrics import accuracy_score, adjusted_rand_score,\
     v_measure_score, silhouette_score, davies_bouldin_score, f1_score
+import collections
 
 
 def evaluate_on_purity_score(y_true, y_pred):
@@ -33,6 +34,28 @@ def evaluate_on_purity_score(y_true, y_pred):
         y_voted_labels[y_pred==cluster] = winner
 
     return accuracy_score(y_true, y_voted_labels)
+
+
+def purity(result, label):
+    # 计算纯度
+
+    total_num = len(label)
+    cluster_counter = collections.Counter(result)
+    original_counter = collections.Counter(label)
+
+    t = []
+    for k in cluster_counter:
+        p_k = []
+        for j in original_counter:
+            count = 0
+            for i in range(len(result)):
+                if result[i] == k and label[i] == j:  # 求交集
+                    count += 1
+            p_k.append(count)
+        temp_t = max(p_k)
+        t.append(temp_t)
+
+    return sum(t) / total_num
 
 
 def evaluate_on_adjusted_rand_socre(y_true, y_pred):
@@ -68,7 +91,7 @@ def evaluate_on_adjusted_rand_socre(y_true, y_pred):
     return adjusted_rand_score(y_true, y_voted_labels)
 
 
-def evaluate_on_silhouette_score_score(y_true, y_pred):
+def evaluate_on_silhouette_score(y_true, y_pred):
     """Purity score
         Args:
             y_true(np.ndarray): n*1 matrix Ground truth labels
@@ -146,4 +169,26 @@ def evaluate_on_f1_score_score(y_true, y_pred):
         y_voted_labels[y_pred==cluster] = winner
 
     return f1_score(y_true, y_voted_labels, average='micro')
+
+
+def contingency_table(result, label):
+    total_num = len(label)
+
+    TP = TN = FP = FN = 0
+    for i in range(total_num):
+        for j in range(i + 1, total_num):
+            if label[i] == label[j] and result[i] == result[j]:
+                TP += 1
+            elif label[i] != label[j] and result[i] != result[j]:
+                TN += 1
+            elif label[i] != label[j] and result[i] == result[j]:
+                FP += 1
+            elif label[i] == label[j] and result[i] != result[j]:
+                FN += 1
+    return (TP, TN, FP, FN)
+
+
+def rand_index(result, label):
+    TP, TN, FP, FN = contingency_table(result, label)
+    return 1.0 * (TP + TN) / (TP + FP + FN + TN)
 
