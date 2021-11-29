@@ -17,7 +17,7 @@ if __name__ == '__main__':
     metrics_list = ['purity', 'ssw', 'davies_bouldin_score', 'adjusted_rand_score']
 
     if data_index == 0:
-        k_range_list = range(2, 15, 1)  # k values
+        k_range_list = range(2, 15, 1)  # k values for pen-base dataset
     elif data_index == 1:
         k_range_list = range(2, 11, 1)  # k value range for satimage dataset
 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
                    'adjusted_rand_score': ar_score}
         for metric in metrics_list:
             df_results.loc[metric, k_clusters] = results[metric]
-        df_results.to_csv('results/Kmeans_{}_dataset_{}_normalized_result.csv'.format(dataset_name, normalize_method))
+        df_results.to_csv('results/Kmeans_{}_{}.csv'.format(dataset_name, normalize_method))
 
 
 

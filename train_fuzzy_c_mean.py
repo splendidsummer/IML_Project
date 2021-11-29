@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
         for j in range(n_training):
             random_state = random_seed[j]
-            cluster = fuzzyCMeans(k_clusters, data, random_state, max_iter=1000)
+            cluster = fuzzyCMeans(k_clusters, data, random_state, max_iter=100)
             cluster.initialize_membership_matrix()
             cluster.train()
             y_pred = cluster.get_inference(data)
@@ -70,5 +70,5 @@ if __name__ == '__main__':
                    'adjusted_rand_score': ar_score}
         for metric in metrics_list:
             df_results.loc[metric, k_clusters] = results[metric]
-        df_results.to_csv('results/Fuzzy_c_means_{}_dataset_{}_normalized_result.csv'.format(dataset_name, normalize_method))
+        df_results.to_csv('results/Fuzzycmeans_{}_{}.csv'.format(dataset_name, normalize_method))
 
