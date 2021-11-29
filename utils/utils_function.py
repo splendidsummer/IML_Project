@@ -117,23 +117,27 @@ def load_data(name=''):
     return data, labels
 
 
-# def df_to_array(x):
-#     return x.values if 'pandas' in str(x.__class__) else x
-#
-#     def labels_cost(X, centroids, dissim):
-#         """Calculate labels and cost function given a matrix of points and
-#         a list of centroids for the k-modes algorithm.
-#         """
-#     n_points = X.shape[0]
-#     cost = 0.
-#     labels = np.empty(n_points, dtype=np.uint16)
-#     for ipoint, curpoint in enumerate(X):
-#         diss = dissim(centroids, curpoint)
-#         clust = np.argmin(diss)
-#         labels[ipoint] = clust
-#         cost += diss[clust]
-#
-#     return labels, cost
+def load_normal_data(name='', normalize_method='MinMax'):
+    """
+    load dataset
+    :param name: which data to train
+    :param test_rate: the test rate of all data
+    :return:
+    """
+
+    data_root = 'dataset'
+    normalize_name = '_' + normalize_method + '_'
+    data_name = name + normalize_name + '.pkl'
+    label_name = name + normalize_name + 'label.pkl'
+
+    data_path = os.path.join(data_root, data_name)
+    label_path = os.path.join(data_root, label_name)
+
+    data = pickle.load(open(data_path, 'rb'), encoding='utf-8')
+    labels = pickle.load(open(label_path, 'rb'), encoding='utf-8')
+
+    return data, labels
+
 
 
 

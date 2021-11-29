@@ -4,12 +4,12 @@ import random
 import time
 import numpy as np
 import pandas as pd
-from fcmeans import FCM
+# from fcmeans import FCM
 
 
 class fuzzyCMeans:
 
-    def __init__(self, k_clusters, data_arr, random_state, max_iter=10000, m=2, epsilon=1e-5):
+    def __init__(self, k_clusters, data_arr, random_state, max_iter=1000, m=2, epsilon=1e-9):
 
         self.k_clusters = k_clusters
         self.data = data_arr
@@ -88,7 +88,7 @@ class fuzzyCMeans:
         return distances
 
     def get_inference(self, inputs):
-        results = np.full((inputs.shape[0], 1), -1)
+        results = np.full(inputs.shape[0], -1)
         for i in range(inputs.shape[0]):
             sample_distances = np.sqrt(np.sum(np.power(self.centroids - inputs[i][np.newaxis, :], 2), axis=1))
             curr_label = np.argmin(sample_distances)

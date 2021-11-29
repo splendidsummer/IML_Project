@@ -1,7 +1,7 @@
 import os
 import time
 import pandas as pd
-from models.fuzzy_c_means import *
+from models.k_means import *
 from utils.evaluate_utils import *
 from utils.utils_function import *
 from sklearn.metrics import adjusted_rand_score, silhouette_score, davies_bouldin_score
@@ -9,8 +9,7 @@ from sklearn.model_selection import KFold, StratifiedKFold
 
 
 if __name__ == '__main__':
-    # Change here to choose different dataset 0 for pen-base and 1 for satimage
-    data_index = 1
+    data_index = 0  # Change here to choose different dataset
     data_name_list = ['pen-based', 'satimage']
     dataset_name = data_name_list[data_index]
 
@@ -25,9 +24,9 @@ if __name__ == '__main__':
     df_results = pd.DataFrame(result_arr, columns=k_range_list, index=metrics_list)
 
     n_training = 3
-    random_seed = np.arange(n_training)*1888 + 1
+    random_seed = np.arange(n_training)*1000 + 1
 
-    normalize_method = 'Mean'   # 'MinMax', 'Standard', 'Mean'
+    normalize_method = 'MinMax'
     data, labels = load_normal_data(dataset_name, normalize_method)
 
     for i, k_clusters in enumerate(k_range_list):
@@ -38,8 +37,8 @@ if __name__ == '__main__':
 
         for j in range(n_training):
             random_state = random_seed[j]
-            cluster = fuzzyCMeans(k_clusters, data, random_state, max_iter=1000)
-            cluster.initialize_membership_matrix()
+            cluster = Kmeans(k_clusters=k_clusters, data_arr=data, max_iter=1000, random_state=random_state)
+            cluster.init_centroids()
             cluster.train()
             y_pred = cluster.get_inference(data)
 
@@ -70,5 +69,12 @@ if __name__ == '__main__':
                    'adjusted_rand_score': ar_score}
         for metric in metrics_list:
             df_results.loc[metric, k_clusters] = results[metric]
-        df_results.to_csv('results/Fuzzy_c_means_{}_dataset_{}_normalized_result.csv'.format(dataset_name, normalize_method))
+        df_results.to_csv('Kmeans_{}_dataset_{}_normalized_result.csv'.format(dataset_name, normalize_method))
+
+
+
+
+
+
+
 

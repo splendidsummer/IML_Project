@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.metrics import accuracy_score, adjusted_rand_score,\
     v_measure_score, silhouette_score, davies_bouldin_score, f1_score
 import collections
-
+from sklearn import metrics
 
 def evaluate_on_purity_score(y_true, y_pred):
     """Purity score
@@ -38,7 +38,6 @@ def evaluate_on_purity_score(y_true, y_pred):
 
 def purity(result, label):
     # 计算纯度
-
     total_num = len(label)
     cluster_counter = collections.Counter(result)
     original_counter = collections.Counter(label)
@@ -56,6 +55,14 @@ def purity(result, label):
         t.append(temp_t)
 
     return sum(t) / total_num
+
+
+def purity_score_func(y_true, y_pred):
+    # compute contingency matrix (also called confusion matrix)
+    contingency_matrix = metrics.cluster.contingency_matrix(y_true, y_pred)
+    # return purity
+    purity_score = np.sum(np.amax(contingency_matrix, axis=0)) / np.sum(contingency_matrix)
+    return purity_score
 
 
 def evaluate_on_adjusted_rand_socre(y_true, y_pred):
@@ -129,10 +136,12 @@ def evaluate_on_ssw(data_arr, k_clusters, centroids, training_labels, n_samples)
         centroid = centroids[cls]
         cls_index = np.nonzero(training_labels == cls)
         curr_cls_arr = data_arr[cls_index]
-        temp_sum = np.sum(np.square(curr_cls_arr - centroid[np.newaxis, :]))
-        print(cls, temp_sum, type(temp_sum))
+        # temp_sum = np.sum(np.square(curr_cls_arr - centroid[np.newaxis, :]))
+        temp_sum = np.sum(np.square(curr_cls_arr - centroid))
+
+        # print(cls, temp_sum, type(temp_sum))
         ssw += temp_sum
-    print('ssw and n_samples is ', ssw, n_samples)
+    print('ssw and n_samples is ', ssw/n_samples, n_samples)
     print()
     ssw = ssw / n_samples
 

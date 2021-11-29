@@ -2,8 +2,7 @@ import pandas as pd
 import numpy as np
 from scipy.io import arff
 from sklearn.preprocessing import scale, StandardScaler, MinMaxScaler, Normalizer, LabelEncoder
-from sklearn.model_selection import train_test_split, StratifiedShuffleSplit,\
-    cross_val_score, KFold
+from sklearn.model_selection import train_test_split, StratifiedShuffleSplit, cross_val_score, KFold
 from sklearn.utils import shuffle
 import json
 import pickle
@@ -17,7 +16,6 @@ def load_numerical_data(arff_paths_dict, dataset_name):
 
 def drop_duplicates(df):
     df = df.drop_duplicates()
-    print('There are {} duplicate items get dropped')
     return df
 
 
@@ -75,14 +73,17 @@ def normalize_data(df, normalize_method='MinMax'):
 
     if normalize_method == 'MinMax':
         normalizer = MinMaxScaler()  # This scaling brings the value between 0 and 1
+        normalize_df = normalizer.fit_transform(df)  # Normalize data in each columns according to normalize_method
+
     elif normalize_method == 'Standard':
-        normalizer = scale  # Standardisation replaces the values by their Z scores, much more like Gaussian
+        normalize_df = scale(df)  # Standardisation replaces the values by their Z scores, much more like Gaussian
     elif normalize_method == 'Mean':    # This distribution will have values between 1 and -1 and 1with μ=0
-        normalize_method == StandardScaler()
+        normalizer = StandardScaler()
+        normalize_df = normalizer.fit_transform(df)  # Normalize data in each columns according to normalize_method
+
     elif normalize_method == 'UnitVector':  # Scaling is done considering the whole feature vector to be of unit length
         normalizer = Normalizer()
-
-    normalize_df = normalizer.fit_transform(df)  # Normalize data in each columns according to normalize_method
+        normalize_df = normalizer.fit_transform(df)  # Normalize data in each columns according to normalize_method
 
     return normalize_df
 
@@ -106,8 +107,8 @@ def split_train_test(df, split_ratio, n_splits=5, random_state=0, split_type='ra
             train_set = df.loc[train_index]
             test_set = df.loc[test_index]
 
-    if split_type == 'cross_validation':
-        kf = KFold(n_splits=n_splits, random_state=random_state)
+    # if split_type == 'cross_validation':
+    #     kf = KFold(n_splits=n_splits, random_state=random_state)
 
     return train_set, test_set
 
@@ -126,40 +127,40 @@ if __name__ == '__main__':
 
     dataset_names = ['pen-based', 'satimage']
     for i, dataset_name in enumerate(dataset_names):
-            data, meta = load_numerical_data(arff_path_dict, dataset_names[i])
-            df = pd.DataFrame(data)
-            df = shuffle_data(df)
+        data, meta = load_numerical_data(arff_path_dict, dataset_names[i])
+        df = pd.DataFrame(data)
+        # df = shuffle_data(df)
 
-            df_colunms = df.columns[:-1]
-            df_label_column = df.columns[-1]
+        df_colunms = df.columns[:-1]
+        df_label_column = df.columns[-1]
 
-            data_labels = df[df_label_column]
-            le = LabelEncoder()
-            data_labels = le.fit_transform(data_labels)
+        data_labels = df[df_label_column]
+        le = LabelEncoder()
+        data_labels = le.fit_transform(data_labels)
 
-            num_nulls = df.isnull().sum()
-            print('There are {} null values in {} dataset'.format(num_nulls, dataset_names[i]))
-            num1 = len(df)
-            df = drop_duplicates(df)
-            num2 = len(df)
-            print('{} duplicate samples get dropped in {} dataset'.format((num1 - num2), dataset_name))
-            df = drop_na(df, how='all')
-            num3 = len(df)
-            print('{} nan samples get dropped in {} dataset'.format((num2 - num3), dataset_name))
-            df = fill_na(df, method='mean')
-            df = normalize_data(df, normalize_method='MinMax')  # This scaling brings the value between 0 and 1
+        df = df[df_colunms]
 
-            data_name = dataset_name + '.pkl'
-            label_name = dataset_name + '_label.pkl'
+        # num_nulls = df.isnull().sum()
+        # print('There are {} null values in {} dataset'.format(num_nulls, dataset_names[i]))
 
-            with open(data_name, 'wb') as f:
-                pickle.dump(df, f)
+        num1 = len(df)
+        df = drop_duplicates(df)
+        num2 = len(df)
+        print('{} duplicate samples get dropped in {} dataset'.format((num1 - num2), dataset_name))
+        df = drop_na(df, how='all')
+        num3 = len(df)
+        print('{} nan samples get dropped in {} dataset'.format((num2 - num3), dataset_name))
+        df = fill_na(df, method='mean')
+        normalize_method = 'UnitVector'
+        df = normalize_data(df, normalize_method=normalize_method)  # This scaling brings the value between 0 and 1
 
-            with open(label_name, 'wb') as f:
-                pickle.dump(data_labels, f)
+        normalize_name = '_' + normalize_method + '_'
+        data_name = dataset_name + normalize_name + '.pkl'
+        label_name = dataset_name + normalize_name + 'label.pkl'
 
+        with open(data_name, 'wb') as f:
+            pickle.dump(df, f)
 
-
-
-
+        with open(label_name, 'wb') as f:
+            pickle.dump(data_labels, f)
 
